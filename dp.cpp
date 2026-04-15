@@ -162,3 +162,53 @@ int solve2(vector<int> num,int x){
     return dp[x];
 
 }
+
+
+
+
+
+////////////////  Maximum Sum of non adjacent element
+
+/// Recursion + Memoization
+int solve(vector<int> &nums,int i,vector<int> &dp){
+    if(i>=nums.size()){
+        return 0;
+    }
+
+    if(dp[i]!=-1) return dp[i];
+
+    int inc = solve(nums,i+2,dp) + nums[i];
+    int exc = solve(nums,i+1,dp);
+
+    dp[i] = max(inc,exc);
+    return dp[i];
+}
+
+
+/// Tabulation
+int solve(vector<int> &nums){
+    vector<int> dp(nums.size(),-1);
+    dp[0] = nums[0];
+
+
+    for(int i=1;i<nums.size();i++){
+        int inc = dp[i-2] + nums[i];
+        int exc = dp[i-1];
+
+        dp[i] = max(inc,exc);
+    }
+    return dp[nums.size()-1];
+}
+
+/// Space Optimization
+int solve(vector<int> &nums){
+    int prev1 = nums[0];
+    int prev2 = 0;
+
+    for(int i=1;i<nums.size();i++){
+        int curr = max(prev2+nums[i],prev1);
+        prev2 = prev1;
+        prev1 = curr;
+    }
+    return prev1;
+}
