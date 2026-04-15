@@ -212,3 +212,115 @@ int solve(vector<int> &nums){
     }
     return prev1;
 }
+
+
+
+
+
+//////////////   House Roberry
+
+/// Recursion
+int solve1(vector<int> & valueInHouse,int i,int n){
+    if(i>=n) return 0;
+    
+    int inc = solve1(valueInHouse,i+2,n) + valueInHouse[i];
+    int exc = solve1(valueInHouse,i+1,n);
+
+    return max(inc,exc);
+}
+
+long long int houseRobber(vector<int>& valueInHouse)
+{
+    if(valueInHouse.size() == 1) return valueInHouse[0];
+    int i = 0;
+    int n = valueInHouse.size();
+
+    int ans1 = solve1(valueInHouse,i,n-1);
+    int ans2 = solve1(valueInHouse,i+1,n);
+
+    return max(ans1,ans2);
+}
+
+/// Recursion + Memoization
+long long solve1(vector<int> & valueInHouse,int i,int n,vector<long long> &dp){
+    if(i>=n) return 0;
+    
+    if(dp[i]!=-1) return dp[i];
+    long long inc = solve1(valueInHouse,i+2,n,dp) + valueInHouse[i];
+    long long exc = solve1(valueInHouse,i+1,n,dp);
+
+    dp[i] = max(inc,exc);
+    return dp[i];
+}
+
+long long int houseRobber(vector<int>& valueInHouse)
+{
+    if(valueInHouse.size() == 1) return valueInHouse[0];
+
+    int i = 0;
+    int n = valueInHouse.size();
+
+    vector<long long> dp1(n,-1);
+    vector<long long> dp2(n,-1);
+
+    long long ans1 = solve1(valueInHouse,i,n-1,dp1);
+    long long ans2 = solve1(valueInHouse,i+1,n,dp2);
+
+    return max(ans1,ans2);
+}
+
+
+/// Tabulation
+long long solve1(vector<int> & valueInHouse,int i,int n){
+    vector<long long> dp(n+1,-1);
+    
+    dp[i] = valueInHouse[i];
+
+    for(int j=i+1;j<n;j++){
+        long long inc = valueInHouse[j];
+        if(j-2 >= i) inc += dp[j-2];
+        long long exc = dp[j-1];
+
+        dp[j] = max(inc,exc);
+    }
+    return dp[n-1];
+}
+
+long long int houseRobber(vector<int>& valueInHouse)
+{
+    if(valueInHouse.size() == 1) return valueInHouse[0];
+
+    int i = 0;
+    int n = valueInHouse.size();
+
+    long long ans1 = solve1(valueInHouse,i,n-1);
+    long long ans2 = solve1(valueInHouse,i+1,n);
+
+    return max(ans1,ans2);
+}
+
+/// Space Optimization
+long long solve1(vector<int> & valueInHouse,int i,int n){
+    long long prev2 = 0;
+    long long prev1 = valueInHouse[i];
+
+    for(int j=i+1;j<n;j++){
+        long long curr = max(prev2+valueInHouse[j],prev1);
+        prev2 = prev1;
+        prev1 = curr;
+    }
+    return prev1;
+}
+
+long long int houseRobber(vector<int>& valueInHouse)
+{
+    if(valueInHouse.size() == 1) return valueInHouse[0];
+
+    int i = 0;
+    int n = valueInHouse.size();
+
+    long long ans1 = solve1(valueInHouse,i,n-1);
+    long long ans2 = solve1(valueInHouse,i+1,n);
+
+    return max(ans1,ans2);
+}
