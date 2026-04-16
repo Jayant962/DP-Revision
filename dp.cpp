@@ -192,7 +192,8 @@ int solve(vector<int> &nums){
 
 
     for(int i=1;i<nums.size();i++){
-        int inc = dp[i-2] + nums[i];
+        int inc = nums[i];
+        if(i-2 >= 0) inc += dp[i-2];
         int exc = dp[i-1];
 
         dp[i] = max(inc,exc);
@@ -323,4 +324,134 @@ long long int houseRobber(vector<int>& valueInHouse)
     long long ans2 = solve1(valueInHouse,i+1,n);
 
     return max(ans1,ans2);
+}
+
+
+
+
+
+/////////////////////    Cut into segments
+
+/// Recursion
+int solve(int n,int x,int y,int z){
+	if(n<0) return INT_MIN;
+	if(n==0) return 0;
+
+	int a = solve(n-x,x,y,z) + 1;
+	int b = solve(n-y,x,y,z) + 1;
+	int c = solve(n-z,x,y,z) + 1;
+	 
+	return max(a,max(b,c));
+}
+
+int cutSegments(int n, int x, int y, int z) {
+	int ans = solve(n,x,y,z);
+	if(ans<0) return 0;
+	return ans;
+}
+
+/// Recursion + Memoization
+int solve(int n,int x,int y,int z,vector<int> &dp){
+	if(n<0) return INT_MIN;
+	if(n==0) return 0;
+
+	if(dp[n]!=-1) return dp[n];
+
+	int a = solve(n-x,x,y,z,dp) + 1;
+	int b = solve(n-y,x,y,z,dp) + 1;
+	int c = solve(n-z,x,y,z,dp) + 1;
+	 
+	dp[n] = max(a,max(b,c));
+	return dp[n];
+}
+
+int cutSegments(int n, int x, int y, int z) {
+	vector<int> dp(n+1,-1);
+	int ans = solve(n,x,y,z,dp);
+	if(ans<0) return 0;
+	return ans;
+}
+
+/// Tabulation
+int solve(int n,int x,int y,int z){
+	vector<int> dp(n+1,INT_MIN);
+	dp[0] = 0;
+
+	for(int i=1;i<=n;i++){
+		if(i-x >= 0) dp[i] = max(dp[i],1+dp[i-x]);
+		if(i-y >= 0) dp[i] = max(dp[i],1+dp[i-y]);
+		if(i-z >= 0) dp[i] = max(dp[i],1+dp[i-z]);
+	}
+	if(dp[n]<0) return 0;
+	return dp[n];
+}
+
+int cutSegments(int n, int x, int y, int z) {
+	int ans = solve(n,x,y,z);
+	if(ans<0) return 0;
+	return ans;
+}
+
+
+
+
+
+////////////////   Count Dearrangements
+
+#define MOD 1000000007
+
+/// Recursion
+long long int countDerangements(int n) {
+    if(n==1) return 0;
+    if(n==2) return 1;
+    return (n-1) * (countDerangements(n-1)%MOD + countDerangements(n-2)%MOD)%MOD;
+}
+
+/// Recursion + Memoization
+long long solve(int n,vector<long long> &dp){
+    if(n==1) return 0;
+    if(n==2) return 1;
+
+    if(dp[n]!=-1) return dp[n];
+
+    dp[n] = (n-1)*(solve(n-1,dp)%MOD + solve(n-2,dp)%MOD)%MOD;
+
+    return dp[n];
+}
+long long int countDerangements(int n) {
+    vector<long long> dp(n+1,-1);
+    return solve(n,dp);
+}
+
+/// Tabulation
+long long solve(int n){
+    vector<long long> dp(n+1,-1);
+    dp[1] = 0;
+    dp[2] = 1;
+
+    for(int i=3;i<=n;i++){
+        dp[i] = (i-1) * (dp[i-1]%MOD + dp[i-2]%MOD)%MOD;
+    }
+
+    return dp[n];
+}
+long long int countDerangements(int n) {
+    return solve(n);
+}
+
+/// Space Optimization
+long long solve(int n){
+    long long prev2 = 0;
+    long long prev1 = 1;
+    long long curr;
+
+    for(int i=3;i<=n;i++){
+        curr = (i-1) * (prev1%MOD + prev2%MOD)%MOD;
+        prev2 = prev1;
+        prev1 = curr;
+    }
+    return prev1;
+}
+long long int countDerangements(int n) {
+    return solve(n);
 }
