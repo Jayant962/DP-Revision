@@ -455,3 +455,78 @@ long long solve(int n){
 long long int countDerangements(int n) {
     return solve(n);
 }
+
+
+
+
+
+
+/////////////////     Painting Fence problem
+
+/// Recursion
+#define MOD 1000000007
+#include <bits/stdc++.h> 
+int numberOfWays(int n, int k) {
+    if(n==1) return k;
+    if(n==2) return k+(k*(k-1));
+
+    long long same = (1LL * numberOfWays(n-2,k)%MOD)*((k-1)%MOD) %MOD;
+    long long diff = (1LL * numberOfWays(n-1,k)%MOD)*((k-1)%MOD) %MOD;
+
+    return (same+diff)%MOD;
+}
+
+/// Recursion+ Memoization
+int solve(int n,int k,vector<int> &dp){
+    if(n==1) return k;
+    if(n==2) return k+(k*(k-1));
+
+    if(dp[n]!=-1) return dp[n];
+
+    long long same = (1LL * solve(n-2,k,dp) * (k-1)) % MOD;
+    long long diff = (1LL * solve(n-1,k,dp) * (k-1)) % MOD;
+
+    dp[n] = (same + diff) % MOD;
+
+    return dp[n];
+}
+
+int numberOfWays(int n, int k) {
+    vector<int> dp(n+1,-1);
+
+    return solve(n,k,dp);
+}
+
+/// Tabulation
+int solve(int n,int k){
+    vector<int> dp(n+1,-1);
+    dp[1] = k;
+    dp[2] = k+(k*(k-1));
+
+    for(int i=3;i<=n;i++){
+        long long same = (1LL * dp[i-2] * (k-1)) % MOD;
+        long long diff = (1LL * dp[i-1] * (k-1)) % MOD;
+
+        dp[i] = (same+diff)%MOD;
+    }
+    return dp[n];
+}
+
+/// Space Optimization
+int solve(int n,int k){
+    int prev2 = k;
+    int prev1 = k+(k*(k-1));
+
+    int curr;
+
+    for(int i=3;i<=n;i++){
+        long long same = (1LL * prev2 * (k-1)) % MOD;
+        long long diff = (1LL * prev1 * (k-1)) % MOD;
+
+        curr = (same+diff)%MOD;
+        prev2 = prev1;
+        prev1 = curr;
+    }
+
+    return prev1;
+}
