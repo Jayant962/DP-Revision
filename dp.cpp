@@ -530,3 +530,130 @@ int solve(int n,int k){
 
     return prev1;
 }
+
+
+
+
+
+///////////////////  Knapsack Problem
+
+/// Recursion(shrink from left)
+int solve(vector<int> &weight, vector<int> &value, int i, int n, int W){
+	if(i==n) return 0;
+
+	int inc = 0;
+	if(weight[i] <= W)
+		inc = value[i] + solve(weight,value,i+1,n,W-weight[i]);
+
+	int exc = solve(weight,value,i+1,n,W);
+
+	return max(inc,exc);
+}
+
+int knapsack(vector<int> weight, vector<int> value, int n, int maxWeight) 
+{
+	return solve(weight,value,0,n,maxWeight);
+}
+
+/// Recursion shrink from right
+int solve(vector<int> &weight, vector<int> &value, int n, int W){
+	if(n<0) return 0;
+
+	int inc = 0;
+	if(weight[n] <= W)
+		inc = value[n] + solve(weight,value,n-1,W-weight[n]);
+
+	int exc = solve(weight,value,n-1,W);
+
+	return max(inc,exc);
+}
+
+int knapsack(vector<int> weight, vector<int> value, int n, int maxWeight) 
+{
+	return solve(weight,value,n-1,maxWeight);
+}
+
+
+/// Recursion + Memoization
+#include <bits/stdc++.h> 
+int solve(vector<int> &weight, vector<int> &value, int n, int W,vector<vector<int>> &dp){
+	if(n<0) return 0;
+
+	if(dp[n][W]!=-1) return dp[n][W];
+
+	int inc = 0;
+	if(weight[n] <= W)
+		inc = value[n] + solve(weight,value,n-1,W-weight[n],dp);
+
+	int exc = solve(weight,value,n-1,W,dp);
+
+	dp[n][W] = max(inc,exc);
+	return dp[n][W];
+}
+
+int knapsack(vector<int> weight, vector<int> value, int n, int maxWeight) 
+{
+	vector<vector<int>> dp(n,vector<int>(maxWeight+1,-1));
+	return solve(weight,value,n-1,maxWeight,dp);
+}
+
+/// Tabulation
+int solve(vector<int> &weight, vector<int> &value, int n, int W){
+	vector<vector<int>> dp(n,vector<int>(W+1,0));
+	for(int i=0;i<=W;i++){
+		if(weight[0] <= i)
+			dp[0][i] = value[0];
+		else 
+			dp[0][i] = 0;
+	}
+
+	for(int i=1;i<n;i++){
+		for(int j=0;j<=W;j++){
+			int inc = 0;
+			if(weight[i] <= j)
+				inc = value[i] + dp[i-1][j-weight[i]];
+
+			int exc = dp[i-1][j];
+
+			dp[i][j] = max(inc,exc);
+		}
+	}
+	return dp[n-1][W];
+}
+
+int knapsack(vector<int> weight, vector<int> value, int n, int maxWeight) 
+{
+	return solve(weight,value,n,maxWeight);
+}
+
+/// Space Optimization
+int solve(vector<int> &weight, vector<int> &value, int n, int W){
+	vector<int> prev(W+1,0);
+	vector<int> curr(W+1,0);
+
+	for(int i=0;i<=W;i++){
+		if(weight[0] <= i)
+			prev[i] = value[0];
+		else 
+			prev[i] = 0;
+	}
+
+	for(int i=1;i<n;i++){
+		for(int j=0;j<=W;j++){
+			int inc = 0;
+			if(weight[i] <= j)
+				inc = value[i] + prev[j-weight[i]];
+
+			int exc = prev[j];
+
+			curr[j] = max(inc,exc);
+		}
+		prev = curr;
+	}
+	return prev[W];
+}
+
+int knapsack(vector<int> weight, vector<int> value, int n, int maxWeight) 
+{
+	return solve(weight,value,n,maxWeight);
+}
