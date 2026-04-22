@@ -953,3 +953,82 @@ public:
         return solve(prices);
     }
 };
+
+
+
+
+
+
+//////////////   Best time to buy and sell stock IV
+
+// class Solution {
+// public:
+//     //  dp[i] is dependent on dp[i+1]  means only two rows are needed thats why we create curr and next now we are going from n->0   so i+1  also  converted into i  therefore next = curr.   curr is dp[i]    and  next is dp[i+1]
+//     int solve(vector<int> &prices,int k){
+//         int n = prices.size();
+//         vector<vector<int> > curr(2,vector<int>(k,0)); 
+//         vector<vector<int> > next(2,vector<int>(k,0)); 
+
+//         for(int i=n-1;i>=0;i--){
+//             for(int j=0;j<=1;j++){
+//                 for(int l=1;l<k;l++){
+//                     int profit = 0;
+//                     if(j){
+//                         profit = max((-prices[i]+next[0][l]),next[1][l]);
+//                     }
+//                     else{
+//                         profit = max((prices[i]+next[1][l-1]),next[0][l]);
+//                     }
+
+//                     curr[j][l] = profit;
+//                 }
+//             }
+//             next = curr;
+//         }
+
+//         return curr[1][k-1];
+//     }
+
+//     int maxProfit(int k,vector<int>& prices) {
+//         int n = prices.size();
+//         return solve(prices,k+1);
+//     }
+// };
+
+
+
+
+
+class Solution {
+public:
+    //  dp[i] is dependent on dp[i+1]  means only two rows are needed thats why we create curr and next now we are going from n->0   so i+1  also  converted into i  therefore next = curr.   curr is dp[i]    and  next is dp[i+1]
+    int solve(vector<int> &prices,int k){
+        int n = prices.size();
+        vector<vector<int> > curr(2,vector<int>(k+1,0)); 
+        vector<vector<int> > next(2,vector<int>(k+1,0)); 
+
+        for(int i=n-1;i>=0;i--){
+            for(int j=0;j<=1;j++){
+                for(int l=1;l<=k;l++){
+                    int profit = 0;
+                    if(j){
+                        profit = max((-prices[i]+next[0][l]),next[1][l]);
+                    }
+                    else{
+                        profit = max((prices[i]+next[1][l-1]),next[0][l]);
+                    }
+
+                    curr[j][l] = profit;
+                }
+            }
+            next = curr;
+        }
+
+        return curr[1][k];
+    }
+
+    int maxProfit(int k,vector<int>& prices) {
+        int n = prices.size();
+        return solve(prices,k);
+    }
+};
