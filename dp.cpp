@@ -828,3 +828,128 @@ public:
         return solve(prices);
     }
 };
+
+
+
+
+
+//////////////   Best Time to Buy and Sell stock III
+
+// class Solution {
+// public:
+//     /// just add one more check of limit if reached(become 0) then return 0  and limit decrease when one full buy and sell completed so no change either buy or not    and   only update when sell
+//     int solve(int idx,int canBuy,vector<int> &prices,int limit){
+//         if(idx==prices.size()) return 0;
+//         if(limit==0) return 0;
+
+//         int profit = 0;
+//         if(canBuy){
+//             profit = max((-prices[idx]+solve(idx+1,0,prices,limit)),solve(idx+1,1,prices,limit));
+//         }
+//         else{
+//             profit = max((prices[idx]+solve(idx+1,1,prices,limit-1)),solve(idx+1,0,prices,limit));
+//         }
+
+//         return profit;
+//     }
+
+//     int maxProfit(vector<int>& prices) {
+//         return solve(0,1,prices,2);
+//     }
+// };
+
+
+// class Solution {
+// public:
+//     int solve(int idx,int canBuy,vector<int> &prices,int limit,vector<vector<vector<int> > > &dp){
+//         if(idx==prices.size()) return 0;
+//         if(limit==0) return 0;
+
+//         if(dp[idx][canBuy][limit]!=-1) return dp[idx][canBuy][limit];
+
+//         int profit = 0;
+//         if(canBuy){
+//             profit = max((-prices[idx]+solve(idx+1,0,prices,limit,dp)),solve(idx+1,1,prices,limit,dp));
+//         }
+//         else{
+//             profit = max((prices[idx]+solve(idx+1,1,prices,limit-1,dp)),solve(idx+1,0,prices,limit,dp));
+//         }
+
+//         dp[idx][canBuy][limit] = profit;
+//         return dp[idx][canBuy][limit];
+//     }
+
+//     int maxProfit(vector<int>& prices) {
+//         int n = prices.size();
+//         vector<vector<vector<int> > > dp(n,vector<vector<int>>(2,vector<int>(3,-1)));   // limit can be 0 1 2
+//         return solve(0,1,prices,2,dp);
+//     }
+// };
+
+
+
+// class Solution {
+// public:
+//     int solve(vector<int> &prices){
+//         int n = prices.size();
+//         vector<vector<vector<int> > > dp(n+1,vector<vector<int> >(2,vector<int>(3,0)));  
+
+//         for(int i=n-1;i>=0;i--){
+//             for(int j=0;j<=1;j++){
+//                 for(int k=1;k<=2;k++){
+//                     int profit = 0;
+//                     if(j){
+//                         profit = max((-prices[i]+dp[i+1][0][k]),dp[i+1][1][k]);
+//                     }
+//                     else{
+//                         profit = max((prices[i]+dp[i+1][1][k-1]),dp[i+1][0][k]);
+//                     }
+
+//                     dp[i][j][k] = profit;
+//                 }
+//             }
+//         }
+
+//         return dp[0][1][2];    //  in main func we pass 0 for idx   1 for canBuy   and 2 for limit means we want to find the values for 0 1 2
+//     }
+
+//     int maxProfit(vector<int>& prices) {
+//         int n = prices.size();
+//         return solve(prices);
+//     }
+// };
+
+
+class Solution {
+public:
+    int solve(vector<int> &prices){
+        int n = prices.size();
+        vector<vector<vector<int> > > dp(n+1,vector<vector<int> >(2,vector<int>(3,0))); 
+        vector<vector<int> > curr(2,vector<int>(3,0)); 
+        vector<vector<int> > next(2,vector<int>(3,0)); 
+
+        for(int i=n-1;i>=0;i--){
+            for(int j=0;j<=1;j++){
+                for(int k=1;k<=2;k++){
+                    int profit = 0;
+                    if(j){
+                        profit = max((-prices[i]+next[0][k]),next[1][k]);
+                    }
+                    else{
+                        profit = max((prices[i]+next[1][k-1]),next[0][k]);
+                    }
+
+                    curr[j][k] = profit;
+                }
+            }
+            next = curr;
+        }
+
+        return curr[1][2];    //  in main func we pass 0 for idx   1 for canBuy   and 2 for limit means we want to find the values for 0 1 2
+    }
+
+    int maxProfit(vector<int>& prices) {
+        int n = prices.size();
+        return solve(prices);
+    }
+};
