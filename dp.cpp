@@ -679,7 +679,7 @@ class Solution {
         if(n==0) return 0;
         if(dp[n]!=-1) return dp[n];
         int ans = n;
-        for(int i=1;i*i<=n;i++){
+        for(int i=1;i*i<=n;i++){           // calls are like   10->9->8---1->0   then callback 0->1  now from 1 try ->2 but it is < 0  so return 0 
             int temp = i*i;
             ans = min(ans,solveMem(n-temp,dp)+1);
         }
@@ -691,7 +691,7 @@ class Solution {
         vector<int> dp(n+1,INT_MAX);
         dp[0] = 0;
 
-        for(int i=1;i<=n;i++){
+        for(int i=1;i<=n;i++){                  //  see in solveMem for every n we are runnign a loop here we are also doing the same
             for(int j=1;j*j<=n;j++){
                 int temp = j*j;
                 if(i-temp>=0) dp[i] = min(dp[i],dp[i-temp]+1);
@@ -708,5 +708,123 @@ class Solution {
         return solveMem(n,dp);
         
         return solveTab(n);
+    }
+};
+
+
+
+
+
+//////////////    Best time to buy and sell stock II
+
+// class Solution {
+// public:
+//     int solve(int idx,int canBuy,vector<int> &prices){
+//         if(idx==prices.size()) return 0;
+
+//         int profit = 0;
+
+//         if(canBuy){
+//                  //  max(buyKaro,matKaro)
+//             profit = max((-prices[idx] + solve(idx+1,0,prices)),solve(idx+1,1,prices));
+//         }
+//         else{
+//                 //   max(sellKaro,matKaro)
+//             profit = max((prices[idx] + solve(idx+1,1,prices)),solve(idx+1,0,prices));
+//         }
+//         return profit;
+//     }
+//     int maxProfit(vector<int>& prices) {
+//         return solve(0,1,prices);
+//     }
+// };
+
+
+// class Solution {
+// public:
+//     int solve(int idx,int canBuy,vector<int> &prices,vector<vector<int> > &dp){
+//         if(idx==prices.size()) return 0;
+//         if(dp[idx][canBuy]!=-1) return dp[idx][canBuy];
+//         int profit = 0;
+
+//         if(canBuy){
+//                  //  max(buyKaro,matKaro)
+//             profit = max((-prices[idx] + solve(idx+1,0,prices,dp)),solve(idx+1,1,prices,dp));
+//         }
+//         else{
+//                 //   max(sellKaro,matKaro)
+//             profit = max((prices[idx] + solve(idx+1,1,prices,dp)),solve(idx+1,0,prices,dp));
+//         }
+//         dp[idx][canBuy] = profit;
+//         return dp[idx][canBuy];
+//     }
+
+//     int maxProfit(vector<int>& prices) {
+//         int n = prices.size();
+//         vector<vector<int> > dp(n,vector<int>(2,-1));  // values changing are idx and canBuy for canBuy 2 values are possible 0 or 1  therefore 2 col needed
+//         return solve(0,1,prices,dp);
+//     }
+// };
+
+
+// class Solution {
+// public:
+//     int solve(vector<int> &prices){
+//         vector<vector<int> > dp(prices.size()+1,vector<int>(2,0));
+//         int n = prices.size();
+//         for(int i=n-1;i>=0;i--){
+//             for(int j=0;j<=1;j++){
+//                 int profit = 0;
+//                 if(j){
+//                         //  max(buyKaro,matKaro)
+//                     profit = max((-prices[i] + dp[i+1][0]),dp[i+1][1]);
+//                 }
+//                 else{
+//                         //   max(sellKaro,matKaro)
+//                     profit = max((prices[i] + dp[i+1][1]),dp[i+1][0]);
+//                 }
+//                 dp[i][j] = profit;
+//             }
+//         }
+//         return dp[0][1];
+//     }
+
+//     int maxProfit(vector<int>& prices) {
+//         int n = prices.size();
+//         return solve(prices);
+//     }
+// };
+
+
+
+class Solution {
+public:
+    int solve(vector<int> &prices){
+        //  our dp is depend on idx+1   so we only need idx and idx+1  row   .  So, jsut reolace dp[i+1] with next and dp[i] with curr we are going from n->0  so  idx+1 change to idx  therefore next = curr;
+        vector<int> next(2,0);
+        vector<int> curr(2,0);
+
+        int n = prices.size();
+        for(int i=n-1;i>=0;i--){
+            for(int j=0;j<=1;j++){
+                int profit = 0;
+                if(j){
+                        //  max(buyKaro,matKaro)
+                    profit = max((-prices[i] + next[0]),next[1]);
+                }
+                else{
+                        //   max(sellKaro,matKaro)
+                    profit = max((prices[i] + next[1]),next[0]);
+                }
+                curr[j] = profit;
+            }
+            next = curr;
+        }
+        return next[1];
+    }
+
+    int maxProfit(vector<int>& prices) {
+        int n = prices.size();
+        return solve(prices);
     }
 };
