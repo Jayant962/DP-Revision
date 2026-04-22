@@ -1032,3 +1032,118 @@ public:
         return solve(prices,k);
     }
 };
+
+
+
+
+
+
+////////////////    Best time to buy and sell stock with transaction fee
+
+// class Solution {
+// public:
+        ///   when one buy and sell happened we have to pay the fees thats why subtract when selling
+//     int solve(int idx,int canBuy,vector<int> &prices,int fee){
+//         if(idx==prices.size()) return 0;
+
+//         int profit = 0;
+
+//         if(canBuy){
+//             profit = max((-prices[idx]+solve(idx+1,0,prices,fee)),solve(idx+1,1,prices,fee));
+//         }
+//         else{
+//             profit = max((prices[idx]+solve(idx+1,1,prices,fee)-fee),solve(idx+1,0,prices,fee));
+//         }
+//         return profit;
+//     }
+
+//     int maxProfit(vector<int>& prices, int fee) {
+//         return solve(0,1,prices,fee);
+//     }
+// };
+
+
+// class Solution {
+// public:
+//     int solve(int idx,int canBuy,vector<int> &prices,int fee,vector<vector<int> > &dp){
+//         if(idx==prices.size()) return 0;
+//         if(dp[idx][canBuy]!=-1) return dp[idx][canBuy];
+
+//         int profit = 0;
+
+//         if(canBuy){
+//             profit = max((-prices[idx]+solve(idx+1,0,prices,fee,dp)),solve(idx+1,1,prices,fee,dp));
+//         }
+//         else{
+//             profit = max((prices[idx]+solve(idx+1,1,prices,fee,dp)-fee),solve(idx+1,0,prices,fee,dp));
+//         }
+//         dp[idx][canBuy] = profit;
+//         return dp[idx][canBuy];
+//     }
+
+//     int maxProfit(vector<int>& prices, int fee) {
+//         int n = prices.size();
+//         vector<vector<int> >dp(n,vector<int>(2,-1));
+//         return solve(0,1,prices,fee,dp);
+//     }
+// };
+
+
+
+// class Solution {
+// public:
+//     int solve(vector<int> &prices,int fee){
+//         int n = prices.size();
+//         vector<vector<int> > dp(n+1,vector<int>(2,0));     //  row represent size and col represent canBuy or not
+
+//         for(int i=n-1;i>=0;i--){
+//             for(int j=0;j<=1;j++){
+//                 int profit = 0;
+//                 if(j){
+//                     profit = max((-prices[i]+dp[i+1][0]),dp[i+1][1]);
+//                 }
+//                 else{
+//                     profit = max((prices[i]+dp[i+1][1]-fee),dp[i+1][0]);
+//                 }
+//                 dp[i][j] = profit;
+//             }
+//         }
+//         return dp[0][1];
+//     }
+
+//     int maxProfit(vector<int>& prices, int fee) {
+//         int n = prices.size();
+//         return solve(prices,fee);
+//     }
+// };
+
+
+
+class Solution {
+public:
+    int solve(vector<int> &prices,int fee){
+        int n = prices.size();
+        vector<int> curr(2,0);
+        vector<int> next(2,0);
+
+        for(int i=n-1;i>=0;i--){
+            for(int j=0;j<=1;j++){
+                int profit = 0;
+                if(j){
+                    profit = max((-prices[i]+next[0]),next[1]);
+                }
+                else{
+                    profit = max((prices[i]+next[1]-fee),next[0]);
+                }
+                curr[j] = profit;
+            }
+            next = curr;
+        }
+        return curr[1];
+    }
+
+    int maxProfit(vector<int>& prices, int fee) {
+        int n = prices.size();
+        return solve(prices,fee);
+    }
+};
