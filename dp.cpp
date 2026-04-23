@@ -1240,3 +1240,35 @@ public:
         return solve(text1,text2);
     }
 };
+
+
+
+
+//////////////   Longest palindromic subsequence   (exactly same as above)
+
+class Solution {
+public:
+     int solve(string text1,string text2){
+        vector<int> curr(text2.size()+1,0);             //   convert dp[i+1]  with next   and dp[i]  with curr
+        vector<int> next(text2.size()+1,0);             //    i is for row j (text2.size) is for col now we only need col therefore text2.size() in both.
+
+        for(int i=text1.size()-1;i>=0;i--){
+            for(int j=text2.size()-1;j>=0;j--){
+                if(text1[i]==text2[j]){
+                    curr[j] = 1+next[j+1];
+                }
+                else{
+                    curr[j] = max(next[j],curr[j+1]);
+                }
+            }
+            next = curr;
+        }
+        return curr[0];
+    }
+
+    int longestPalindromeSubseq(string s) {
+        string rev = s;
+        reverse(rev.begin(),rev.end());
+        return solve(s,rev);
+    }
+};
